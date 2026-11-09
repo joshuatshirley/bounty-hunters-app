@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#101109">
   <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Bounty Hunters">
   <title>Bounty Hunters</title>
@@ -12,56 +13,120 @@
   <link rel="icon" href="icon-192.png" type="image/png">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <style>
-    :root { color-scheme: dark; --bg: #101109; --ink: #e9e6d8; --dim: #b9b6a6; --gold: #ffcc00; }
-    html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink); font: 16px/1.45 system-ui, sans-serif; }
-    #cover { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
-      gap: 14px; padding: 24px 16px; text-align: center; background: var(--bg); transition: opacity .3s; }
-    #cover img { width: 120px; height: 120px; }
-    #cover h1 { margin: 0; font-size: 20px; letter-spacing: .04em; }
-    #cover p { margin: 0; max-width: 340px; color: var(--dim); }
-    #help { display: none; flex-direction: column; gap: 10px; align-items: center; }
-    #cover.stuck #help { display: flex; }
-    #cover.stuck #wait { display: none; }
+    :root { color-scheme: dark; --bg: #101109; --ink: #e9e6d8; --dim: #b9b6a6; --gold: #ffcc00; --line: #34362a; }
+    html, body { margin: 0; min-height: 100%; background: var(--bg); color: var(--ink); font: 16px/1.45 system-ui, sans-serif; }
+    #cover { min-height: 100vh; min-height: 100dvh; box-sizing: border-box; display: flex; flex-direction: column; align-items: center;
+      justify-content: center; gap: 14px; text-align: center;
+      padding: calc(24px + env(safe-area-inset-top)) 16px calc(24px + env(safe-area-inset-bottom)); }
+    #cover img { width: 112px; height: 112px; }
+    h1 { margin: 0; font-size: 20px; letter-spacing: .04em; }
+    p { margin: 0; max-width: 340px; color: var(--dim); }
+    .code { font: 800 44px/1 ui-monospace, Menlo, Consolas, monospace; letter-spacing: .18em; color: var(--gold);
+      background: #1b1c14; border: 1px solid var(--line); border-radius: 12px; padding: 14px 18px 14px 26px; }
     a.btn, button { display: inline-block; background: var(--gold); color: var(--bg); border: 0; border-radius: 8px;
       padding: 12px 18px; font: 700 16px system-ui, sans-serif; text-decoration: none; cursor: pointer; }
-    button.alt { background: transparent; color: var(--gold); border: 1px solid var(--gold); }
+    button.alt, a.alt { background: transparent; color: var(--gold); border: 1px solid var(--gold); }
+    .small { font-size: 14px; }
+    [hidden] { display: none !important; }
   </style>
 </head>
 <body>
   <div id="cover">
     <img src="icon.svg" alt="">
     <h1>FLORENCE BOUNTY HUNTERS</h1>
-    <p id="wait">Opening the board…</p>
-    <div id="help">
-      <p id="helpText">If the board didn't open, tap below.</p>
-      <a class="btn" id="signin">Open the board</a>
-    </div>
+    <p id="status">Loading…</p>
+    <div class="code" id="code" hidden></div>
+    <p id="how" class="small" hidden>On your laptop or another signed-in device, open the board's
+      <b>Setup → Paired phones</b> and enter this code.</p>
+    <a class="btn alt" id="approveHere" hidden target="_blank" rel="noopener">Approve on this phone</a>
+    <button id="retry" hidden>Try again</button>
+    <button class="alt" id="browserUse" hidden>Use it in the browser</button>
   </div>
   <script>
-    // The board is a private Google Apps Script web app. Google won't sign in inside a frame from
-    // another site, so this installable page opens the board itself. No data lives here.
-    const BOARD = "https://script.google.com/macros/s/AKfycbzQsBBPEwbVBY3hbf4uiwH3NeOqVot3btRqwBlpkBFba_tcuyUq-JAeLkfFDpY-DHv9/exec?page=mobile";
-    const cover = document.getElementById("cover");
-    const iOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-    document.getElementById("signin").href = BOARD;
+    // The board's data and code stay private: this public page holds neither. It pairs the phone
+    // once (a 6-digit code the owner approves on the signed-in board), then asks the phone API for
+    // the board page and runs it here, full screen. Wrapped so none of these names clash with the
+    // board's own code, which runs in this same window afterwards.
+    (function () {
+    const API = "https://script.google.com/macros/s/AKfycbzSeDBt3Eu08WNEcpR9UfH1zD2efxkaeD56UIAF1Ltc_cvDLR8FovWwOLOWpmar5yrmlQ/exec";
+    const BOARD = "https://script.google.com/macros/s/AKfycbzQsBBPEwbVBY3hbf4uiwH3NeOqVot3btRqwBlpkBFba_tcuyUq-JAeLkfFDpY-DHv9/exec";
+    const KEY = "bh-key";
+    const $ = id => document.getElementById(id);
+    const store = {
+      get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+      set(k, v) { try { localStorage.setItem(k, v); } catch (e) { /* private mode */ } },
+      del(k) { try { localStorage.removeItem(k); } catch (e) { /* private mode */ } },
+    };
+    const say = t => { $("status").textContent = t; };
 
-    if (iOS) {
-      // iPhone installs the board page itself (Share → Add to Home Screen).
-      cover.classList.add("stuck");
-      document.getElementById("helpText").innerHTML =
-        "On iPhone: tap <b>Open the board</b>, sign in, then tap Share → <b>Add to Home Screen</b>.";
-    } else if (matchMedia("(display-mode: standalone)").matches) {
-      // Launched from the installed app: go straight to the board.
-      setTimeout(() => cover.classList.add("stuck"), 4000);
-      location.replace(BOARD);
-    } else {
-      // In a browser tab: stay put so Chrome can install it.
-      cover.classList.add("stuck");
-      document.getElementById("helpText").innerHTML =
-        "To install: tap Chrome's menu ⋮ → <b>Install app</b>. Then open it from your home screen.";
+    async function api(fn, args, key) {
+      const r = await fetch(API, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ fn, args: args || [], key }) });
+      const j = await r.json();
+      if (j.unpaired) { store.del(KEY); throw Object.assign(new Error(j.error), { unpaired: true }); }
+      if (!j.ok) throw new Error(j.error || "Phone API error");
+      return j.result;
+    }
+
+    function failed(e, again) {
+      say("Couldn't reach the board (" + e.message + ").");
+      $("retry").hidden = false;
+      $("retry").onclick = () => { $("retry").hidden = true; again(); };
+    }
+
+    async function pair() {
+      ["code", "how", "approveHere"].forEach(id => $(id).hidden = true);
+      say("Getting a pairing code…");
+      let p;
+      try { p = await api("pairStart"); } catch (e) { failed(e, pair); return; }
+      $("code").textContent = p.code;
+      $("approveHere").href = BOARD + "?page=phones&code=" + p.code;
+      ["code", "how", "approveHere"].forEach(id => $(id).hidden = false);
+      say("Pair this phone");
+      const until = Date.now() + p.minutes * 60000;
+      const tick = async () => {
+        if (Date.now() > until) { pair(); return; }
+        try {
+          const r = await api("pairCheck", [p.pairId]);
+          if (r.key) { store.set(KEY, r.key); ["code", "how", "approveHere"].forEach(id => $(id).hidden = true); boot(); return; }
+          if (r.expired) { pair(); return; }
+        } catch (e) { /* signal dropped — keep trying */ }
+        setTimeout(tick, 3000);
+      };
+      setTimeout(tick, 3000);
+    }
+
+    async function boot() {
+      const key = store.get(KEY);
+      if (!key) { pair(); return; }
+      say("Loading the board…");
+      let html;
+      try { html = await api("appPage", [], key); }
+      catch (e) { if (e.unpaired) pair(); else failed(e, boot); return; }
+      // The page talks to the phone API through shim.html's __BH transport.
+      const head = "<script>window.__BH = { api: " + JSON.stringify(API) + ", key: " + JSON.stringify(key) +
+        ", unpaired: function () { try { localStorage.removeItem('" + KEY + "'); } catch (e) {} location.reload(); } };<\/script>" +
+        '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">' +
+        '<meta name="theme-color" content="#101109"><link rel="manifest" href="manifest.webmanifest">' +
+        '<link rel="icon" href="icon-192.png" type="image/png"><link rel="apple-touch-icon" href="apple-touch-icon.png">';
+      html = html.replace(/<base target="_top">/i, "").replace(/<head>/i, "<head>" + head);
+      document.open();
+      document.write(html);
+      document.close();
+    }
+
+    const installed = matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+    if (installed) boot();
+    else {
+      const iOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+      say(iOS ? "To install: tap Share → Add to Home Screen, then open it from your home screen."
+                 : "To install: tap Chrome's menu ⋮ → Install app, then open it from your home screen.");
+      $("browserUse").hidden = false;
+      $("browserUse").onclick = () => { $("browserUse").hidden = true; boot(); };
     }
 
     if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
+    })();
   </script>
 </body>
 </html>

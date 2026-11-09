@@ -1,6 +1,6 @@
 // Keeps the app shell (this page and its icons) on the phone so it opens instantly.
 // The board itself always loads live from Google; nothing from it is cached here.
-const CACHE = "bh-shell-3";
+const CACHE = "bh-shell-4";
 const SHELL = ["./", "index.html", "manifest.webmanifest", "icon.svg", "icon-192.png", "icon-512.png", "maskable-512.png", "apple-touch-icon.png"];
 
 self.addEventListener("install", e => {

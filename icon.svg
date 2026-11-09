@@ -1,0 +1,167 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="170 170 660 700"><defs>
+    <!-- Drop Shadows & Text Effects -->
+    <filter id="dropShadow" x="-15%" y="-15%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#000000" flood-opacity="0.35"/>
+    </filter>
+    <filter id="textShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="4" stdDeviation="3" flood-color="#000000" flood-opacity="0.4"/>
+    </filter>
+
+    <!-- Background & Disc Gradients -->
+    <linearGradient id="ringBlack" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#26292e"/>
+      <stop offset="50%" stop-color="#141619"/>
+      <stop offset="100%" stop-color="#0a0b0d"/>
+    </linearGradient>
+    <radialGradient id="whiteField" cx="50%" cy="48%" r="52%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="82%" stop-color="#f2f4f7"/>
+      <stop offset="100%" stop-color="#d8dde4"/>
+    </radialGradient>
+
+    <!-- Helmet Gradients Matching Mural Painting -->
+    <linearGradient id="domeGreen" x1="0%" y1="0%" x2="100%" y2="20%">
+      <stop offset="0%" stop-color="#1e2d24"/>
+      <stop offset="32%" stop-color="#25422b"/>
+      <stop offset="52%" stop-color="#3c7a3e"/>
+      <stop offset="85%" stop-color="#539e49"/>
+      <stop offset="100%" stop-color="#3d7a37"/>
+    </linearGradient>
+
+    <linearGradient id="mandibleRed" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#d62828"/>
+      <stop offset="50%" stop-color="#b5191d"/>
+      <stop offset="100%" stop-color="#800f13"/>
+    </linearGradient>
+
+    <linearGradient id="visorPurple" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#482366"/>
+      <stop offset="50%" stop-color="#301548"/>
+      <stop offset="100%" stop-color="#1c0a2b"/>
+    </linearGradient>
+
+    <linearGradient id="cheekTealLeft" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0b6e4f"/>
+      <stop offset="60%" stop-color="#074f38"/>
+      <stop offset="100%" stop-color="#042e20"/>
+    </linearGradient>
+
+    <linearGradient id="cheekTealRight" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0d7a58"/>
+      <stop offset="50%" stop-color="#095c42"/>
+      <stop offset="100%" stop-color="#053827"/>
+    </linearGradient>
+
+    <linearGradient id="crestTeal" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#114b46"/>
+      <stop offset="50%" stop-color="#1b7068"/>
+      <stop offset="100%" stop-color="#0f403b"/>
+    </linearGradient>
+
+    <linearGradient id="goldYellow" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffe14d"/>
+      <stop offset="50%" stop-color="#f5bc16"/>
+      <stop offset="100%" stop-color="#d99605"/>
+    </linearGradient>
+
+    <!-- Exact Clip Path for the T-Visor Cutout -->
+    <clipPath id="tVisorClip">
+      <path d="M 272,492 L 728,492 L 732,524 L 538,524 L 542,845 L 458,845 L 462,524 L 268,524 Z"/>
+    </clipPath>
+
+    <!-- Text Curves Matching Mural Layout -->
+    <path id="topArcOutside" d="M 150,245 A 450,450 0 0,1 850,245" fill="none"/>
+    <path id="bottomArcInside" d="M 155,660 A 365,365 0 0,0 845,660" fill="none"/>
+  </defs><g id="mural-helmet" filter="url(#dropShadow)">
+
+    <!-- Left & Right Ear Caps -->
+    <path d="M 235,480 L 216,492 L 210,635 L 228,645 Z" fill="#16291e" stroke="#0d1711" stroke-width="5" stroke-linejoin="round"/>
+    <path d="M 765,480 L 784,492 L 790,635 L 772,645 Z" fill="#1f5438" stroke="#0d1711" stroke-width="5" stroke-linejoin="round"/>
+    <line x1="777" y1="500" x2="782" y2="630" stroke="#78c291" stroke-width="3" opacity="0.6"/>
+
+    <!-- Helmet Dome -->
+    <path d="M 240,480 C 242,300 355,212 500,212 C 645,212 758,300 760,480 Z"
+          fill="url(#domeGreen)" stroke="#141f18" stroke-width="6" stroke-linejoin="round"/>
+
+    <!-- Dome Left Dark Charcoal-Green Shading -->
+    <path d="M 240,480 C 242,340 310,245 430,220 C 375,285 370,380 410,480 Z"
+          fill="#18241d" opacity="0.75"/>
+
+    <!-- Dome White Glossy Teardrop Highlight -->
+    <path d="M 555,245 C 605,268 648,315 668,365 C 638,348 595,305 555,245 Z"
+          fill="#e2f5e4" opacity="0.65"/>
+
+    <!-- Outer Green Lower Mandible Borders -->
+    <path d="M 235,480 L 215,725 L 240,738 L 256,480 Z" fill="#154730" stroke="#0d1711" stroke-width="4"/>
+    <path d="M 765,480 L 785,725 L 760,738 L 744,480 Z" fill="#1b6341" stroke="#0d1711" stroke-width="4"/>
+
+    <!-- Lower Cheek Assemblies -->
+    <!-- Left Cheek Black Recess -->
+    <path d="M 250,520 L 425,535 L 438,835 L 232,732 Z" fill="#101715" stroke="#0a0f0d" stroke-width="4"/>
+    <!-- Left Cheek Emerald/Teal Angled Facet -->
+    <path d="M 232,732 L 292,638 C 345,675 395,735 438,835 Z" fill="url(#cheekTealLeft)" stroke="#0c261c" stroke-width="4" stroke-linejoin="round"/>
+    <!-- Left Cheek Brush Highlight -->
+    <path d="M 265,720 L 298,668 L 385,765 Z" fill="#29a378" opacity="0.35"/>
+
+    <!-- Right Cheek Black Recess -->
+    <path d="M 750,520 L 575,535 L 562,835 L 768,732 Z" fill="#101715" stroke="#0a0f0d" stroke-width="4"/>
+    <!-- Right Cheek Emerald/Teal Angled Facet -->
+    <path d="M 768,732 L 708,638 C 655,675 605,735 562,835 Z" fill="url(#cheekTealRight)" stroke="#0c261c" stroke-width="4" stroke-linejoin="round"/>
+    <!-- Right Cheek Brush Highlight -->
+    <path d="M 735,715 L 700,665 L 605,785 Z" fill="#32bd8c" opacity="0.4"/>
+
+    <!-- ==================== RED MANDIBLE FRAME & T-BORDER ==================== -->
+    <path d="M 240,476 L 760,476 L 766,532
+             C 655,542 588,595 572,838
+             L 428,842
+             C 412,595 345,542 234,532 Z"
+          fill="url(#mandibleRed)" stroke="#4a0709" stroke-width="5" stroke-linejoin="round"/>
+
+    <!-- Red Trim Inner Bevel Highlights -->
+    <path d="M 250,483 L 750,483" stroke="#ff7a7a" stroke-width="3" opacity="0.65"/>
+    <path d="M 418,535 L 448,535 L 452,830" fill="none" stroke="#ff8585" stroke-width="3" opacity="0.7"/>
+    <path d="M 552,535 L 552,830" fill="none" stroke="#ff8585" stroke-width="3" opacity="0.5"/>
+
+    <!-- ==================== PURPLE & GOLD STRIPED T-VISOR ==================== -->
+    <g clip-path="url(#tVisorClip)">
+      <rect x="250" y="480" width="500" height="380" fill="url(#visorPurple)"/>
+      <path d="M 455,524 L 545,524 L 545,850 L 455,850 Z" fill="#240e38"/>
+
+      <!-- Left Brow Glint 1 -->
+      <polygon points="300,490 318,490 298,526 280,526" fill="url(#goldYellow)"/>
+      <polygon points="305,492 313,492 295,524 287,524" fill="#ffffff" opacity="0.7"/>
+
+      <!-- Left Brow Triple Glint -->
+      <polygon points="355,490 385,490 365,526 335,526" fill="url(#goldYellow)"/>
+      <polygon points="392,490 406,490 386,526 372,526" fill="#fff394"/>
+      <polygon points="412,490 424,490 404,526 392,526" fill="#ffffff" opacity="0.85"/>
+
+      <!-- Center Main Diagonal Gold Stripe -->
+      <polygon points="495,488 575,488 455,635 455,540" fill="url(#goldYellow)"/>
+      <polygon points="515,490 545,490 458,598 458,562" fill="#fff6a1" opacity="0.8"/>
+
+      <!-- Lower Vertical Center Gold Stripe -->
+      <polygon points="542,605 542,678 455,775 455,702" fill="url(#goldYellow)"/>
+      <polygon points="538,628 538,655 462,740 462,712" fill="#ffffff" opacity="0.9"/>
+
+      <!-- Right Brow Double Glint -->
+      <polygon points="650,490 676,490 654,526 628,526" fill="url(#goldYellow)"/>
+      <polygon points="682,490 695,490 673,526 660,526" fill="#ffffff" opacity="0.85"/>
+    </g>
+
+    <!-- Visor Crisp Inner Outline -->
+    <path d="M 272,492 L 728,492 L 732,524 L 538,524 L 542,845 L 458,845 L 462,524 L 268,524 Z"
+          fill="none" stroke="#1a0926" stroke-width="5" stroke-linejoin="round"/>
+
+    <!-- ==================== CLEAN FOREHEAD VERTICAL CREST STRIP ==================== -->
+    <g id="forehead-strip">
+      <!-- Outer Dark Bevel -->
+      <path d="M 452,205 C 484,198 516,198 548,205 L 558,472 L 505,492 L 456,472 Z"
+            fill="#0d2624" stroke="#091716" stroke-width="5" stroke-linejoin="round"/>
+      <!-- Inner Clean Teal Strip Plate (3D7F removed) -->
+      <path d="M 462,212 C 488,206 512,206 538,212 L 548,466 L 505,483 L 465,466 Z"
+            fill="url(#crestTeal)" stroke="#5cd6c8" stroke-width="3" stroke-linejoin="round"/>
+    </g>
+  </g>
+
+  </svg>

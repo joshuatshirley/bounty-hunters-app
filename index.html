@@ -50,9 +50,15 @@
       cover.classList.add("stuck");
       document.getElementById("helpText").innerHTML =
         "On iPhone: tap <b>Open the board</b>, sign in, then tap Share → <b>Add to Home Screen</b>.";
-    } else {
+    } else if (matchMedia("(display-mode: standalone)").matches) {
+      // Launched from the installed app: go straight to the board.
       setTimeout(() => cover.classList.add("stuck"), 4000);
       location.replace(BOARD);
+    } else {
+      // In a browser tab: stay put so Chrome can install it.
+      cover.classList.add("stuck");
+      document.getElementById("helpText").innerHTML =
+        "To install: tap Chrome's menu ⋮ → <b>Install app</b>. Then open it from your home screen.";
     }
 
     if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});

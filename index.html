@@ -14,10 +14,8 @@
   <style>
     :root { color-scheme: dark; --bg: #101109; --ink: #e9e6d8; --dim: #b9b6a6; --gold: #ffcc00; }
     html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink); font: 16px/1.45 system-ui, sans-serif; }
-    iframe { position: fixed; inset: 0; width: 100%; height: 100%; border: 0; background: var(--bg); }
     #cover { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
       gap: 14px; padding: 24px 16px; text-align: center; background: var(--bg); transition: opacity .3s; }
-    #cover.gone { opacity: 0; pointer-events: none; }
     #cover img { width: 120px; height: 120px; }
     #cover h1 { margin: 0; font-size: 20px; letter-spacing: .04em; }
     #cover p { margin: 0; max-width: 340px; color: var(--dim); }
@@ -30,42 +28,31 @@
   </style>
 </head>
 <body>
-  <iframe id="board" title="Florence Bounty Hunters" allow="clipboard-write"></iframe>
   <div id="cover">
     <img src="icon.svg" alt="">
     <h1>FLORENCE BOUNTY HUNTERS</h1>
-    <p id="wait">Loading the board…</p>
+    <p id="wait">Opening the board…</p>
     <div id="help">
-      <p id="helpText">Sign in with the Google account that owns the board, then come back and tap Reload.</p>
-      <a class="btn" id="signin" target="_blank" rel="noopener">Sign in</a>
-      <button class="alt" id="reload">Reload</button>
+      <p id="helpText">If the board didn't open, tap below.</p>
+      <a class="btn" id="signin">Open the board</a>
     </div>
   </div>
   <script>
-    // The board itself is a private Google Apps Script web app; this page only frames it so it can be
-    // installed. No data lives here — Google sign-in guards the board.
+    // The board is a private Google Apps Script web app. Google won't sign in inside a frame from
+    // another site, so this installable page opens the board itself. No data lives here.
     const BOARD = "https://script.google.com/macros/s/AKfycbzQsBBPEwbVBY3hbf4uiwH3NeOqVot3btRqwBlpkBFba_tcuyUq-JAeLkfFDpY-DHv9/exec?page=mobile";
-    const cover = document.getElementById("cover"), frame = document.getElementById("board");
+    const cover = document.getElementById("cover");
     const iOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
     document.getElementById("signin").href = BOARD;
 
     if (iOS) {
-      // Safari blocks Google sign-in inside a frame, so iPhone installs the board page itself.
+      // iPhone installs the board page itself (Share → Add to Home Screen).
       cover.classList.add("stuck");
       document.getElementById("helpText").innerHTML =
         "On iPhone: tap <b>Open the board</b>, sign in, then tap Share → <b>Add to Home Screen</b>.";
-      document.getElementById("signin").textContent = "Open the board";
-      document.getElementById("signin").removeAttribute("target");
-      document.getElementById("reload").style.display = "none";
     } else {
-      let ready = false;
-      window.addEventListener("message", e => {
-        if (!/(^https:\/\/script\.google\.com$)|(\.googleusercontent\.com$)/.test(e.origin)) return;
-        if (e.data && e.data.bh === "ready") { ready = true; cover.classList.add("gone"); }
-      });
-      frame.src = BOARD;
-      setTimeout(() => { if (!ready) cover.classList.add("stuck"); }, 15000);
-      document.getElementById("reload").addEventListener("click", () => location.reload());
+      setTimeout(() => cover.classList.add("stuck"), 4000);
+      location.replace(BOARD);
     }
 
     if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});

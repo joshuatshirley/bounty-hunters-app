@@ -118,9 +118,7 @@
     const installed = matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
     if (installed) boot();
     else {
-      const iOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-      say(iOS ? "To install: tap Share → Add to Home Screen, then open it from your home screen."
-                 : "To install: tap Chrome's menu ⋮ → Install app, then open it from your home screen.");
+      say("To install: tap Chrome's menu ⋮ → Install app (or Add to Home screen), then open it from your home screen.");
       $("browserUse").hidden = false;
       $("browserUse").onclick = () => { $("browserUse").hidden = true; boot(); };
     }

@@ -96,16 +96,45 @@
       setTimeout(tick, 3000);
     }
 
+    // The last board page is kept on the phone, so the app opens at once and with no signal.
+    // Each launch, the page that opened downloads the current one for next time (PAGE_REFRESH).
+    const PAGE_CACHE = "bh-page", PAGE_KEY = "board-page";
+    async function keptPage() {
+      try { const r = await (await caches.open(PAGE_CACHE)).match(PAGE_KEY); return r ? await r.text() : null; }
+      catch (e) { return null; }
+    }
+    async function keepPage(html) {
+      try { await (await caches.open(PAGE_CACHE)).put(PAGE_KEY, new Response(html, { headers: { "Content-Type": "text/html" } })); }
+      catch (e) { /* no Cache Storage: the next launch downloads it again */ }
+    }
+
     async function boot() {
       const key = store.get(KEY);
       if (!key) { pair(); return; }
+      const kept = await keptPage();
+      if (kept) { run(kept, key); return; }
       say("Loading the board…");
       let html;
       try { html = await api("appPage", [], key); }
       catch (e) { if (e.unpaired) pair(); else failed(e, boot); return; }
+      await keepPage(html);
+      run(html, key);
+    }
+
+    function run(html, key) {
+      // Runs inside the board page (this script is gone once it's written): 3 s after it opens,
+      // fetch the current board page and keep it for the next launch. Writing the page cancels any
+      // download this shell started, so it can't be done from here.
+      const refresh = "window.addEventListener('load', function () { setTimeout(function () {" +
+        "fetch(" + JSON.stringify(API) + ", { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }," +
+        " body: JSON.stringify({ fn: 'appPage', args: [], key: " + JSON.stringify(key) + " }) })" +
+        ".then(function (r) { return r.json(); }).then(function (j) { if (j.ok && j.result) return caches.open('" + PAGE_CACHE + "')" +
+        ".then(function (c) { return c.put('" + PAGE_KEY + "', new Response(j.result, { headers: { 'Content-Type': 'text/html' } })); }); })" +
+        ".catch(function () {}); }, 3000); });";
       // The page talks to the phone API through shim.html's __BH transport.
       const head = "<script>window.__BH = { api: " + JSON.stringify(API) + ", key: " + JSON.stringify(key) +
-        ", unpaired: function () { try { localStorage.removeItem('" + KEY + "'); } catch (e) {} location.reload(); } };<\/script>" +
+        ", unpaired: function () { try { localStorage.removeItem('" + KEY + "'); caches.delete('" + PAGE_CACHE + "'); } catch (e) {} location.reload(); } };" +
+        refresh + "<\/script>" +
         '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">' +
         '<meta name="theme-color" content="#101109"><link rel="manifest" href="manifest.webmanifest">' +
         '<link rel="icon" href="icon-192.png" type="image/png"><link rel="apple-touch-icon" href="apple-touch-icon.png">';
